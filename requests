@@ -1,0 +1,42 @@
+ USE ServiceBase;
+ GO
+ 
+
+ -- 1. Выборка данных: Получить список всех клиентов и их контактные телефоны
+ SELECT fio, phone
+ FROM Clients;
+ GO
+ 
+
+ -- 2. Фильтрация и сортировка: Получить список заявок, созданных в 2023 году, отсортированных по дате начала в порядке убывания.
+ SELECT r.requestID, r.startDate, cm.carModel, rs.requestStatus
+ FROM Requests r
+ JOIN CarModels cm ON r.carModelID = cm.carModelID
+ JOIN RequestStatuses rs ON r.requestStatusID = rs.requestStatusID
+ WHERE YEAR(r.startDate) = 2023
+ ORDER BY r.startDate DESC;
+ GO
+ 
+
+ -- 3. Агрегация и группировка: Посчитать количество заявок для каждого типа автомобиля.
+ SELECT ct.carType, COUNT(r.requestID) AS КоличествоЗаявок
+ FROM Requests r
+ JOIN CarModels cm ON r.carModelID = cm.carModelID
+ JOIN CarTypes ct ON cm.carTypeID = ct.carTypeID
+ GROUP BY ct.carType;
+ GO
+ 
+
+ -- 4. Запрос с подзапросом: Получить список мастеров, которые оставили комментарии к заявкам.
+ SELECT fio
+ FROM Masters
+ WHERE masterID IN (SELECT DISTINCT masterID FROM Comments);
+ GO
+ 
+
+ -- 5. Запрос с объединением таблиц (JOIN): Получить информацию о заявках, включая ФИО клиента и марку автомобиля.
+ SELECT r.requestID, c.fio AS Клиент, cm.carModel AS Автомобиль
+ FROM Requests r
+ JOIN Clients c ON r.clientID = c.clientID
+ JOIN CarModels cm ON r.carModelID = cm.carModelID;
+ GO
